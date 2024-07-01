@@ -1,0 +1,126 @@
+#include <iostream>
+#include <queue>
+#include <string>
+using namespace std;
+
+struct Aviao
+{
+    string identificacao;
+    string modelo;
+    string companhia;
+
+    Aviao(string id, string mod, string comp) : identificacao(id), modelo(mod), companhia(comp) {}
+};
+
+class ControlePista
+{
+private:
+    queue<Aviao> filaDecolagem;
+
+public:
+    void listarNumeroAvioes() 
+    {
+        cout << "Número de aviões aguardando na fila de decolagem: " << filaDecolagem.size() << endl;
+    }
+
+    void autorizarDecolagem()
+    {
+        if (filaDecolagem.empty()) 
+        {
+            cout << "Nenhum avião na fila de decolagem." << endl;
+        } else {
+            Aviao primeiroAviao = filaDecolagem.front();
+            cout << "Autorizando decolagem do avião: " << primeiroAviao.identificacao << endl;
+            filaDecolagem.pop();
+        }
+    }
+
+    void adicionarAviao(const Aviao& aviao)
+    {
+        filaDecolagem.push(aviao);
+        cout << "Avião adicionado à fila de decolagem: " << aviao.identificacao << endl;
+    }
+
+    void listarAvioes()
+    {
+        if (filaDecolagem.empty())
+        {
+            cout << "Nenhum avião na fila de decolagem." << endl;
+        } else 
+        {
+            cout << "Aviões na fila de decolagem:" << endl;
+            queue<Aviao> temp = filaDecolagem;
+            while (!temp.empty())
+            {
+                Aviao aviao = temp.front();
+                cout << "Identificação: " << aviao.identificacao << ", Modelo: " << aviao.modelo << ", Companhia: " << aviao.companhia << endl;
+                temp.pop();
+            }
+        }
+    }
+
+    void listarPrimeiroAviao()
+    {
+        if (filaDecolagem.empty())
+        {
+            cout << "Nenhum avião na fila de decolagem." << endl;
+        } else
+        {
+            Aviao primeiroAviao = filaDecolagem.front();
+            cout << "Primeiro avião na fila de decolagem:" << endl;
+            cout << "Identificação: " << primeiroAviao.identificacao << ", Modelo: " << primeiroAviao.modelo << ", Companhia: " << primeiroAviao.companhia << endl;
+        }
+    }
+};
+
+int main()
+{
+    ControlePista controle;
+    int opcao;
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Listar número de aviões aguardando na fila de decolagem\n";
+        cout << "2. Autorizar decolagem do primeiro avião da fila\n";
+        cout << "3. Adicionar um avião à fila de espera\n";
+        cout << "4. Listar todos os aviões na fila de espera\n";
+        cout << "5. Listar as características do primeiro avião da fila\n";
+        cout << "Escolha uma opção: ";
+        cin >> opcao;
+        cin.ignore();
+
+        switch (opcao)
+        {
+            case 1:
+                controle.listarNumeroAvioes();
+                break;
+            case 2:
+                controle.autorizarDecolagem();
+                break;
+            case 3:
+            {
+                string identificacao, modelo, companhia;
+                cout << "Digite a identificação do avião: ";
+                getline(cin, identificacao);
+                cout << "Digite o modelo do avião: ";
+                getline(cin, modelo);
+                cout << "Digite a companhia do avião: ";
+                getline(cin, companhia);
+                Aviao aviao(identificacao, modelo, companhia);
+                controle.adicionarAviao(aviao);
+                break;
+            }
+            case 4:
+                controle.listarAvioes();
+                break;
+            case 5:
+                controle.listarPrimeiroAviao();
+                break;
+            case 0:
+                
+            default:
+                cout << "Opção inválida. Tente novamente." << endl;
+        }
+    } while (opcao != 0);
+
+    return 0;
+}
