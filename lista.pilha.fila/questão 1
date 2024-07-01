@@ -1,0 +1,141 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) : data(val), next(nullptr) {}
+};
+
+class LinkedList {
+public:
+    Node* head;
+
+    LinkedList() : head(nullptr) {}
+
+    void append(int data) {
+        if (!head) {
+            head = new Node(data);
+            return;
+        }
+        Node* temp = head;
+        while (temp->next) {
+            temp = temp->next;
+        }
+        temp->next = new Node(data);
+    }
+
+    bool isSorted() {
+        if (!head || !head->next) return true;
+        Node* temp = head;
+        while (temp->next) {
+            if (temp->data > temp->next->data) {
+                return false;
+            }
+            temp = temp->next;
+        }
+        return true;
+    }
+
+    void sort() {
+        if (!head || !head->next) return;
+        Node* current = head;
+        Node* index = nullptr;
+        int temp;
+
+        while (current) {
+            index = current->next;
+            while (index) {
+                if (current->data > index->data) {
+                    temp = current->data;
+                    current->data = index->data;
+                    index->data = temp;
+                }
+                index = index->next;
+            }
+            current = current->next;
+        }
+    }
+
+    void merge(LinkedList& other) {
+        if (!other.head) return;
+
+        if (!head) {
+            head = other.head;
+            return;
+        }
+
+        Node* dummy = new Node(0);
+        Node* current = dummy;
+        Node* p1 = head;
+        Node* p2 = other.head;
+
+        while (p1 && p2) {
+            if (p1->data <= p2->data) {
+                current->next = p1;
+                p1 = p1->next;
+            } else {
+                current->next = p2;
+                p2 = p2->next;
+            }
+            current = current->next;
+        }
+
+        if (p1) {
+            current->next = p1;
+        } else {
+            current->next = p2;
+        }
+
+        head = dummy->next;
+        delete dummy;
+    }
+
+    void print() {
+        Node* temp = head;
+        while (temp) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    LinkedList list1;
+    LinkedList list2;
+
+    list1.append(3);
+    list1.append(1);
+    list1.append(2);
+
+    list2.append(6);
+    list2.append(4);
+    list2.append(5);
+
+    cout << "List 1: ";
+    list1.print();
+    cout << "List 2: ";
+    list2.print();
+
+    if (!list1.isSorted()) {
+        cout << "List 1 is not sorted. Sorting list 1." << endl;
+        list1.sort();
+    }
+    if (!list2.isSorted()) {
+        cout << "List 2 is not sorted. Sorting list 2." << endl;
+        list2.sort();
+    }
+
+    cout << "Sorted List 1: ";
+    list1.print();
+    cout << "Sorted List 2: ";
+    list2.print();
+
+    list1.merge(list2);
+
+    cout << "Merged List: ";
+    list1.print();
+
+    return 0;
+}
