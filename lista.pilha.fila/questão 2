@@ -1,0 +1,56 @@
+#include <iostream>
+#include <stack>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+void imprimirOrdemInversa(const string& texto) {
+    stack<char> pilha;
+    for (char c : texto) {
+        pilha.push(c);
+    }
+    while (!pilha.empty()) {
+        cout << pilha.top();
+        pilha.pop();
+    }
+    cout << endl;
+}
+
+bool ehPalindromo(const string& texto) {
+    stack<char> pilha;
+    string textoFiltrado;
+
+    for (char c : texto) {
+        if (isalnum(c)) {
+            char lower_c = tolower(c);
+            textoFiltrado += lower_c;
+            pilha.push(lower_c);
+        }
+    }
+
+    for (char c : textoFiltrado) {
+        if (c != pilha.top()) {
+            return false;
+        }
+        pilha.pop();
+    }
+
+    return true;
+}
+
+int main() {
+    string texto;
+    cout << "Digite uma sequência de caracteres: ";
+    getline(cin, texto);
+
+    cout << "Texto na ordem inversa: ";
+    imprimirOrdemInversa(texto);
+
+    if (ehPalindromo(texto)) {
+        cout << "O texto é um palíndromo." << endl;
+    } else {
+        cout << "O texto não é um palíndromo." << endl;
+    }
+
+    return 0;
+}
