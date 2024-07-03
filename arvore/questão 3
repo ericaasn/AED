@@ -1,0 +1,184 @@
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+
+struct Municipio {
+    string nome;
+    double area;   
+    int populacao;
+
+    Municipio(string _nome, double _area, int _populacao)
+        : nome(_nome), area(_area), populacao(_populacao) {}
+};
+
+
+struct No {
+    Municipio municipio;
+    No* esquerda;
+    No* direita;
+
+    No(Municipio _municipio) : municipio(_municipio), esquerda(nullptr), direita(nullptr) {}
+};
+
+
+class ArvoreMunicipios {
+private:
+    No* raiz;
+
+   
+    No* inserirRecursivo(No* no, Municipio municipio) {
+        if (no == nullptr) {
+            return new No(municipio);
+        }
+
+      
+        if (municipio.nome < no->municipio.nome) {
+            no->esquerda = inserirRecursivo(no->esquerda, municipio);
+        } else {
+            no->direita = inserirRecursivo(no->direita, municipio);
+        }
+        return no;
+    }
+
+    
+    void percorrerEmOrdem(No* no) {
+        if (no != nullptr) {
+            percorrerEmOrdem(no->esquerda);
+            cout << "Nome: " << setw(20) << left << no->municipio.nome
+                 << "Área: " << setw(10) << left << no->municipio.area
+                 << "População: " << no->municipio.populacao << endl;
+            percorrerEmOrdem(no->direita);
+        }
+    }
+
+    
+    int contarMunicipios(No* no) {
+        if (no == nullptr) {
+            return 0;
+        }
+        return 1 + contarMunicipios(no->esquerda) + contarMunicipios(no->direita);
+    }
+
+    
+    void listarMunicipiosComMaisDeXhabitantes(No* no, int x) {
+        if (no != nullptr) {
+            listarMunicipiosComMaisDeXhabitantes(no->esquerda, x);
+            if (no->municipio.populacao > x) {
+                cout << no->municipio.nome << endl;
+            }
+            listarMunicipiosComMaisDeXhabitantes(no->direita, x);
+        }
+    }
+
+    
+    void mostrarDensidadeDemografica(No* no) {
+        if (no != nullptr) {
+            double densidade = no->municipio.populacao / no->municipio.area;
+            cout << "Nome: " << setw(20) << left << no->municipio.nome
+                 << "Densidade: " << setprecision(2) << fixed << densidade << " hab/km²" << endl;
+            mostrarDensidadeDemografica(no->esquerda);
+            mostrarDensidadeDemografica(no->direita);
+        }
+    }
+
+    
+    double calcularAreaTotal(No* no) {
+        if (no == nullptr) {
+            return 0.0;
+        }
+        return no->municipio.area + calcularAreaTotal(no->esquerda) + calcularAreaTotal(no->direita);
+    }
+
+   
+    Municipio encontrarMaiorPopulacao(No* no) {
+        if (no->direita == nullptr) {
+            return no->municipio;
+        }
+        return encontrarMaiorPopulacao(no->direita);
+    }
+
+public:
+    ArvoreMunicipios() : raiz(nullptr) {}
+
+   
+    void inserir(Municipio municipio) {
+        raiz = inserirRecursivo(raiz, municipio);
+    }
+
+   
+    void percorrerEListar() {
+        percorrerEmOrdem(raiz);
+    }
+
+  
+    int contarNumeroMunicipios() {
+        return contarMunicipios(raiz);
+    }
+
+   
+    void listarMunicipiosMaisDeXhabitantes(int x) {
+        cout << "Municípios com mais de " << x << " habitantes:" << endl;
+        listarMunicipiosComMaisDeXhabitantes(raiz, x);
+    }
+
+    
+    void mostrarDensidadeDemografica() {
+        cout << "Densidade demográfica de cada município:" << endl;
+        mostrarDensidadeDemografica(raiz);
+    }
+
+  
+    void mostrarPorcentagemAreaTotalBrasil(double areaBrasil) {
+        double areaTotal = calcularAreaTotal(raiz);
+        double porcentagem = (areaTotal / areaBrasil) * 100.0;
+        cout << "Área total dos municípios em relação ao Brasil: " << setprecision(2) << fixed << porcentagem << "%" << endl;
+    }
+
+    
+    void mostrarMunicipiosOrdemAlfabetica() {
+        cout << "Municípios em ordem alfabética:" << endl;
+        percorrerEListar();
+    }
+
+    
+    void mostrarMaiorPopulacao() {
+        Municipio maiorPopulacao = encontrarMaiorPopulacao(raiz);
+        cout << "Município com a maior população: " << maiorPopulacao.nome << endl;
+    }
+};
+
+
+double calcularAreaBrasil() {
+    
+    return 8515767.0; 
+}
+
+int main() {
+    ArvoreMunicipios arvore;
+
+  
+    arvore.inserir(Municipio("São Paulo", 1521.11, 12325232));
+    arvore.inserir(Municipio("Rio de Janeiro", 1200.03, 6747815));
+    arvore.inserir(Municipio("Belo Horizonte", 331.40, 2521564));
+    arvore.inserir(Municipio("Brasília", 5801.94, 3055149));
+    arvore.inserir(Municipio("Mato Grosso do Sul", 693.79, 2886698));
+    arvore.inserir(Municipio("Fortaleza", 313.8, 2669342));
+    arvore.inserir(Municipio("Manaus", 11401.06, 2182763));
+
+
+    arvore.mostrarMunicipiosOrdemAlfabetica();
+    cout << endl;
+    arvore.listarMunicipiosMaisDeXhabitantes(3000000);
+    cout << endl;
+    arvore.mostrarDensidadeDemografica();
+    cout << endl;
+    arvore.mostrarPorcentagemAreaTotalBrasil(calcularAreaBrasil());
+    cout << endl;
+    arvore.mostrarMaiorPopulacao();
+
+    return 0;
+}
