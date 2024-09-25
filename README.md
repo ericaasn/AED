@@ -1,2 +1,2 @@
 # AED
-Lista de exercícios de AED
+Repositório destinado aos exerceícios da discplina algoritmo e estrutura de dados 
